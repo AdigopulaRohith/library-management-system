@@ -7,17 +7,18 @@ Programming. Being built and pushed module by module over 5 weeks.
 
 - [x] Week 1 — `Book` class
 - [x] Week 2 — `Member` class
-- [ ] Week 3 — `Library` core engine (issue/return, dictionary lookups)
+- [x] Week 3 — `Library` core engine (issue/return, dictionary lookups)
 - [ ] Week 4 — Search + reporting
 - [ ] Week 5 — Final polish, duplicate-entry protection
 
-## This week: `Member`
+## This week: `Library` core engine
 
-`Member` tracks a borrower's own state — the list of `book_id`s they
-currently hold — kept separate from `Book`'s state. This separation
-keeps each class focused on one responsibility, and makes it easy to
-build the `Library` engine (next week) on top of both.
+`Library` ties `Book` and `Member` together. Books and members are
+stored in dictionaries keyed by `book_id` / `member_id`, so issuing or
+returning a book is an O(1) average lookup instead of scanning a list.
+`issue_book()` and `return_book()` validate availability and update
+both the book and member state consistently.
 
 ```bash
-python3 member.py
+python3 library.py
 ```
