@@ -8,17 +8,16 @@ Programming. Being built and pushed module by module over 5 weeks.
 - [x] Week 1 — `Book` class
 - [x] Week 2 — `Member` class
 - [x] Week 3 — `Library` core engine (issue/return, dictionary lookups)
-- [ ] Week 4 — Search + reporting
+- [x] Week 4 — Search + reporting
 - [ ] Week 5 — Final polish, duplicate-entry protection
 
-## This week: `Library` core engine
+## This week: Search + reporting
 
-`Library` ties `Book` and `Member` together. Books and members are
-stored in dictionaries keyed by `book_id` / `member_id`, so issuing or
-returning a book is an O(1) average lookup instead of scanning a list.
-`issue_book()` and `return_book()` validate availability and update
-both the book and member state consistently.
+Added `search_by_title`, `search_by_author`, and `search_by_isbn` so
+books can be found without knowing the exact ID. Also added
+`list_available_books()` and `list_member_books()` for quick reports.
+`main.py` is a full demo tying every feature together.
 
 ```bash
-python3 library.py
+python3 main.py
 ```
