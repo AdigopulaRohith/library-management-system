@@ -28,6 +28,14 @@ class Library:
         print(f"Added book: {self.books[book_id]}")
         return book_id
 
+    def remove_book(self, book_id):
+        if book_id in self.books:
+            del self.books[book_id]
+            print(f"Removed book ID {book_id}")
+            return True
+        print("Book not found.")
+        return False
+
     # ---------- Member management ----------
 
     def add_member(self, name, email):
@@ -36,6 +44,14 @@ class Library:
         self._next_member_id += 1
         print(f"Added member: {self.members[member_id]}")
         return member_id
+
+    def remove_member(self, member_id):
+        if member_id in self.members:
+            del self.members[member_id]
+            print(f"Removed member ID {member_id}")
+            return True
+        print("Member not found.")
+        return False
 
     # ---------- Issue / Return ----------
 
@@ -85,12 +101,28 @@ class Library:
         print(f"'{book.title}' returned by {member.name}.")
         return True
 
+    # ---------- Search (new this week) ----------
 
-if __name__ == "__main__":
-    # quick sanity check for this week's module
-    lib = Library()
-    bid = lib.add_book("Clean Code", "Robert C. Martin", "9780132350884", 1)
-    mid = lib.add_member("Rohith", "rohith@example.com")
-    lib.issue_book(bid, mid)
-    lib.issue_book(bid, mid)  # should fail, no copies left
-    lib.return_book(bid, mid)
+    def search_by_title(self, keyword):
+        keyword = keyword.lower()
+        return [b for b in self.books.values() if keyword in b.title.lower()]
+
+    def search_by_author(self, keyword):
+        keyword = keyword.lower()
+        return [b for b in self.books.values() if keyword in b.author.lower()]
+
+    def search_by_isbn(self, isbn):
+        return [b for b in self.books.values() if b.isbn == isbn]
+
+    # ---------- Reports (new this week) ----------
+
+    def list_available_books(self):
+        return [b for b in self.books.values() if b.is_available()]
+
+    def list_member_books(self, member_id):
+        member = self.members.get(member_id)
+        if not member:
+            print("Member not found.")
+            return []
+        return [self.books[bid] for bid in member.issued_books if bid in self.books]
+
