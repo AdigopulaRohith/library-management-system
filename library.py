@@ -13,24 +13,38 @@ class Library:
     LOAN_PERIOD_DAYS = 14
 
     def __init__(self):
-        self.books = {}      # book_id -> Book
-        self.members = {}    # member_id -> Member
+        self.books = {}          # book_id -> Book
+        self.members = {}        # member_id -> Member
         self.transactions = []
         self._next_book_id = 1
         self._next_member_id = 1
+        self._isbn_index = {}    # isbn -> book_id, for duplicate detection
 
     # ---------- Book management ----------
 
     def add_book(self, title, author, isbn, total_copies=1):
+        # Week 5 fix: duplicate ISBNs no longer create a second entry —
+        # they add copies to the existing book instead.
+        if isbn in self._isbn_index:
+            existing = self.books[self._isbn_index[isbn]]
+            existing.total_copies += total_copies
+            existing.available_copies += total_copies
+            print(f"ISBN already exists, added {total_copies} more copy(ies) "
+                  f"of: {existing.title}")
+            return existing.book_id
+
         book_id = self._next_book_id
         self.books[book_id] = Book(book_id, title, author, isbn, total_copies)
+        self._isbn_index[isbn] = book_id
         self._next_book_id += 1
         print(f"Added book: {self.books[book_id]}")
         return book_id
 
     def remove_book(self, book_id):
         if book_id in self.books:
+            isbn = self.books[book_id].isbn
             del self.books[book_id]
+            del self._isbn_index[isbn]
             print(f"Removed book ID {book_id}")
             return True
         print("Book not found.")
@@ -39,6 +53,12 @@ class Library:
     # ---------- Member management ----------
 
     def add_member(self, name, email):
+        # Week 5 fix: reject duplicate emails instead of silently
+        # creating a second member record for the same person.
+        if any(m.email == email for m in self.members.values()):
+            print(f"A member with email {email} is already registered.")
+            return None
+
         member_id = self._next_member_id
         self.members[member_id] = Member(member_id, name, email)
         self._next_member_id += 1
@@ -101,7 +121,7 @@ class Library:
         print(f"'{book.title}' returned by {member.name}.")
         return True
 
-    # ---------- Search (new this week) ----------
+    # ---------- Search ----------
 
     def search_by_title(self, keyword):
         keyword = keyword.lower()
@@ -114,7 +134,7 @@ class Library:
     def search_by_isbn(self, isbn):
         return [b for b in self.books.values() if b.isbn == isbn]
 
-    # ---------- Reports (new this week) ----------
+    # ---------- Reports ----------
 
     def list_available_books(self):
         return [b for b in self.books.values() if b.is_available()]
@@ -125,4 +145,3 @@ class Library:
             print("Member not found.")
             return []
         return [self.books[bid] for bid in member.issued_books if bid in self.books]
-
